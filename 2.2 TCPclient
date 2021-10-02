@@ -7,18 +7,20 @@
 #define BUFLEN 256 /* buffer length */
 int main(int argc, char **argv) 
 {
-  int n, bytes_to_read;
-  int sd, port;
-  struct sockaddr_in server;
-  struct hostent *hp;
-  char *host, *bp, rbuf [BUFLEN],sbuf [BUFLEN];
+  int n, bytes_to_read;\\
+  int sd, port;\\
+  struct sockaddr_in server;\\
+  struct hostent *hp;\\
+  char *host, *bp, rbuf [BUFLEN],sbuf [BUFLEN];\\
 
   switch(argc) {
-  case 1:
+  case 2:\\
+    host=argv[1];
     port = SERVER_TCP_PORT;
     break;
-  case 2:
-    port = atoi(argv[1]);
+  case 3:\\
+    host=argv[1];
+    port = atoi(argv[2]);
     break;
   default:
     fprintf(stderr, "Usage: %s [port]\n", argv[0]);
@@ -34,34 +36,31 @@ int main(int argc, char **argv)
   bzero ((char *)&server, sizeof(struct sockaddr_in));
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
-  server.sin_addr.s_addr = hton1 (INADDR_ANY) ;
-  if (bind(sd, (struct sockaddr *)&server,
+  if ((hp = gethostbyname (host)) == NULL) { 
+    fprintf(stderr, "Can't get server's address\n");
+    exit (1);
+  }
+  bcopy (hp->h_addr, (char *)&server.sin_addr,hp->_length);
+  
+  /* Connectinq to the server */
+if (connect(sd, (struct sockaddr *)&server,
   sizeof(server)) ==-1) {
     fprintf(stderr, "Can't bind name to socket\n");
     exit (1);
   }
-  /* queue up to 5 connect requests */ 
-  listen(sd, 5);
-  while (1) {
-    client_len = sizeof (client);
-    if ((new_sd = accept (sd, (struct sockaddr *) 
-    &client, &client_len)) ==-1) { 
-      fprintf(stderr,"Can't accept client\n");
-      exit (1);
+    printf("Connected: server's address is s\n",hp->_name);
+    printf("Transmit:\n");/* get user's text */ 
+    write (sd, sbuf, BUFLEN) ;/* send it out */
+    printf ("Receive:\n");
+    bp = rbuf;
+    bytes_to_read = BUFLEN;
+    while ((n = read (sd, bp , bytes_to_read)) > 0) { 
+      bp +=n;
+      bytes_to_read -=n;
     }
-      
-      bp=buf;
-  bytes_to_read = BUFLEN;
-  while ((n = read (new_sd, bp, bytes_to_read)) > 0) { 
-    bp+=n;
-    bytes_to_read -= n;
-  }
-    
-  write  (new_sd, buf, BUFLEN) 
-  close (new_sd);
-}
-close (sd);
-return(0);
+    printf ("os\n", rbuf);
+    close (sd);
+    return(0);
 }
 
   
